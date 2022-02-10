@@ -20,7 +20,7 @@ OpenShift:
 
 image:
   repository: sonarqube
-  tag: 8.5.1-community
+  tag: 8.9.5-community
   pullPolicy: IfNotPresent
   # If using a private repository, the name of the imagePullSecret to use
   # pullSecret: my-repo-secret
@@ -60,9 +60,6 @@ ingress:
     - name: sonar.organization.com
       # Different clouds or configurations might need /* as the default path
       path: /
-      # Only for API version "networking.k8s.io/v1"
-      # https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types
-      pathType: Prefix
       # For additional control over serviceName and servicePort
       # serviceName: someService
       # servicePort: somePort
