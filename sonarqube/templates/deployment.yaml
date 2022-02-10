@@ -168,10 +168,6 @@ spec:
         - name: "wait-for-db"
           image: {{ default "busybox:1.32" .Values.initContainers.image }}
           imagePullPolicy: {{ .Values.image.pullPolicy  }}
-          {{- if $securityContext := .Values.initContainers.securityContext }}
-          securityContext:
-{{ toYaml $securityContext | indent 12 }}
-          {{- end }}
           resources:
 {{ toYaml .Values.initContainers.resources | indent 12 }}
           command: ["/bin/sh", "-c", "for i in $(seq 1 200); do nc -z -w3 {{ .Release.Name}}-postgresql 5432 && exit 0 || sleep 2; done; exit 1"]
@@ -196,9 +192,6 @@ spec:
 {{ toYaml .Values.affinity | indent 8 }}
     {{- end }}
       containers:
-      {{- if .Values.extraContainers }}
-        {{- toYaml .Values.extraContainers | nindent 8 }}
-      {{- end }}
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -220,8 +213,8 @@ spec:
             - name: SONAR_JDBC_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{- if .Values.postgresql.existingSecret }} {{ .Values.postgresql.existingSecret }} {{ else }} {{ .Release.Name }}-postgresql {{- end }}
-                  key: {{ .Values.postgresql.secretKey }}
+                  name: {{ template "postgresql.secret" . }}
+                  key: {{ template "postgresql.secretPasswordKey" . }}
             {{- with .Values.env }}
             {{- . | toYaml | trim | nindent 12 }}
             {{- end }}
